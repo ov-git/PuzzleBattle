@@ -15,12 +15,13 @@ const Game = (props: Props) => {
   // track the current position of the chess game in state to trigger a re-render of the chessboard
   const [chessPosition, setChessPosition] = useState(chessGame.fen());
   const [solved, setSolved] = useState(0);
-  const { loading, loadPuzzle, checkMove, initialPosition } = usePuzzle();
+  const { loading, nextPuzzle, loadPuzzle, checkMove, fen, getResponse } =
+    usePuzzle();
 
   useEffect(() => {
-    chessGame.load(initialPosition);
+    chessGame.load(fen);
     setChessPosition(chessGame.fen());
-  }, [initialPosition, solved]);
+  }, [fen, solved]);
 
   // handle piece drop
   const onPieceDrop = ({
@@ -41,20 +42,24 @@ const Game = (props: Props) => {
       const parsedMove = parseMove(move);
       const { correct, solved } = checkMove(parsedMove);
 
-      if (correct) {
-        chessGame.move(move);
-        setChessPosition(chessGame.fen());
-      }
-
       if (solved) {
         setSolved((prev) => prev + 1);
-        loadPuzzle();
+        nextPuzzle();
+      } else if (correct) {
+        const response = getResponse();
+        makeMove(parsedMove);
+        setTimeout(() => makeMove(response), 500);
       }
 
       return true;
     } catch {
       return false;
     }
+  };
+
+  const makeMove = (move: string) => {
+    chessGame.move(move);
+    setChessPosition(chessGame.fen());
   };
 
   // set the chessboard options
@@ -69,7 +74,7 @@ const Game = (props: Props) => {
     <div className="flex">
       <Board chessboardOptions={chessboardOptions} />
       <h1 className="text-xl text-red-200">Solved: {solved}</h1>
-      <button onClick={loadPuzzle} disabled={loading}>
+      <button onClick={nextPuzzle} disabled={loading}>
         {loading ? "Loading..." : "New Puzzle"}
       </button>
     </div>
