@@ -1,21 +1,21 @@
-import React from "react";
 import { Link } from "react-router";
 
-type Props = {};
-
-const NavBar = (props: Props) => {
+const NavBar = () => {
   return (
-    <div className="w-full h-16 bg-black flex gap-4 items-center text-white text-2xl">
-      <Link className="bg-blue-500 text-white px-4 py-2 rounded" to="/">
+    <div className="w-full h-16 bg-slate-800 flex gap-4 items-center text-white text-2xl border-b border-gray-500">
+      <Link className=" hover:underline text-white px-4 py-2 rounded" to="/">
         Home
       </Link>
 
-      <Link className="bg-blue-500 text-white px-4 py-2 rounded" to="/play">
+      <Link
+        className=" hover:underline text-white px-4 py-2 rounded"
+        to="/play"
+      >
         Play
       </Link>
 
       <Link
-        className="bg-blue-500 text-white px-4 py-2 rounded"
+        className=" hover:underline text-white px-4 py-2 rounded"
         to="/leaderboard"
       >
         Leaderboard

@@ -1,15 +1,20 @@
 type Props = {
   solved: number;
   loading: boolean;
+  nextPuzzle: () => void;
 };
 
-const InfoPanel = ({ solved, loading }: Props) => {
+const InfoPanel = ({ nextPuzzle, solved, loading }: Props) => {
   return (
     <>
-      <h1 className="text-xl text-red-200">Solved: {solved}</h1>
-      {/* <button onClick={nextPuzzle} disabled={loading}>
-        {loading ? "Loading..." : "New Puzzle"}
-      </button> */}
+      <h1 className="text-xl font-bold text-white m-3">Solved: {solved}</h1>
+      <button
+        className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded self-center"
+        onClick={nextPuzzle}
+        disabled={loading}
+      >
+        {loading ? "Loading..." : "SKIP"}
+      </button>
     </>
   );
 };
