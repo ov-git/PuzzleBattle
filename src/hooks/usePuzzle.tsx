@@ -1,62 +1,22 @@
 import { useCallback, useEffect, useState } from "react";
-
-type ApiResponse = {
-  puzzle: Puzzle;
-};
-
-type PuzzleItem = {
-  puzzle: Puzzle;
-};
-
-type Puzzle = {
-  id: string;
-  fen: string;
-  solution: string[];
-};
-
-const fetchPuzzles = async (): Promise<PuzzleItem[]> => {
-  //   const response = await fetch("https://lichess.org/api/puzzle/next", {
-  const response = await fetch(
-    "https://lichess.org/api/puzzle/batch/mix?nb=15",
-    {
-      method: "GET",
-      headers: {
-        Accept: "application/json",
-        Authorization: "Bearer " + import.meta.env.VITE_LICHESS_API,
-      },
-    },
-  );
-  const data = await response.json();
-  const puzzle = data.puzzles;
-  return puzzle;
-};
-
-const fetchPuzzlebyId = async (id: string): Promise<Puzzle> => {
-  const response = await fetch(`https://lichess.org/api/puzzle/${id}`, {
-    method: "GET",
-    headers: {
-      Accept: "application/json",
-      Authorization: "Bearer " + import.meta.env.VITE_LICHESS_API,
-    },
-  });
-  const data = await response.json();
-  return data.puzzle;
-};
+import { DEFAULT_FEN } from "../lib/Utils";
+import type { Puzzle, PuzzleItem } from "../lib/Types";
+import { fetchPuzzlebyId, fetchPuzzles } from "../lib/Api";
 
 const usePuzzle = () => {
   const [index, setIndex] = useState(0);
   const [puzzles, setPuzzles] = useState<PuzzleItem[]>([]);
   const [currentPuzzle, setCurrentPuzzle] = useState<Puzzle>();
-  const [fen, setfen] = useState<string>(
-    "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1",
-  );
+  const [fen, setfen] = useState<string>(DEFAULT_FEN);
   const [solution, setSolution] = useState<string[]>([]);
   const [currentMove, setCurrentMove] = useState(0);
   const [loading, setLoading] = useState(false);
   const [puzzleVersion, setPuzzleVersion] = useState(0);
 
   useEffect(() => {
-    loadPuzzle();
+    if (puzzles.length === 0 && loading === false) {
+      loadPuzzle();
+    }
   }, []);
 
   useEffect(() => {

@@ -5,6 +5,7 @@ import usePuzzle from "../hooks/usePuzzle";
 import { parseMove } from "../lib/Utils";
 
 import type { PieceDropHandlerArgs } from "react-chessboard";
+import InfoPanel from "./InfoPanel";
 
 type Props = {};
 
@@ -73,10 +74,7 @@ const Game = (props: Props) => {
   return (
     <div className="flex">
       <Board chessboardOptions={chessboardOptions} />
-      <h1 className="text-xl text-red-200">Solved: {solved}</h1>
-      <button onClick={nextPuzzle} disabled={loading}>
-        {loading ? "Loading..." : "New Puzzle"}
-      </button>
+      <InfoPanel solved={solved} loading={loading} />
     </div>
   );
 };
