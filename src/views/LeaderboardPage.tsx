@@ -23,9 +23,9 @@ const LeaderboardPage = () => {
     }
   }, []);
   return (
-    <div className="flex flex-col items-center  min-h-screen bg-gray-900 text-white pt-20">
-      <h1 className="text-3xl font-bold mb-4">Leaderboard</h1>
-      <h2 className="text-xl font-bold mb-4 ">Solved:</h2>
+    <div className="flex flex-col items-center  min-h-screen bg-gray-900 text-white pt-20 text-lg">
+      <h1 className="text-4xl font-bold mb-4">Leaderboard</h1>
+      <h2 className="text-2xl font-bold mb-4 ">Solved:</h2>
       <ul>
         {leaderboard
           .sort((a, b) => b - a)

@@ -68,10 +68,11 @@ const Game = (props: Props) => {
   const chessboardOptions = {
     position: chessPosition,
     onPieceDrop: onPieceDrop,
-    // your config options here
+    boardOrientation: chessGame.turn(),
   };
+
   return (
-    <div className="flex">
+    <div className="flex flex-col lg:flex-row">
       <Board chessboardOptions={chessboardOptions} />
       <InfoPanel nextPuzzle={nextPuzzle} solved={solved} loading={loading} />
     </div>

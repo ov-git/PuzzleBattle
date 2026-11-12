@@ -3,7 +3,7 @@ import NavBar from "./components/NavBar";
 
 const Layout = () => {
   return (
-    <div className="h-full w-full bg-black font-squealer min-h-screen ">
+    <div className="h-full w-full font-squealer min-h-screen  bg-slate-900 ">
       <NavBar />
       <Outlet />
     </div>
