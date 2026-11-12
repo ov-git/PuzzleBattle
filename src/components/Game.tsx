@@ -21,8 +21,16 @@ const Game = (props: Props) => {
   const [optionSquares, setOptionSquares] = useState({});
 
   const [solved, setSolved] = useState(0);
-  const { loading, nextPuzzle, loadPuzzle, checkMove, fen, getResponse } =
-    usePuzzle();
+  const [difficulty, setDifficulty] = useState(0);
+  const {
+    loading,
+    nextPuzzle,
+    loadPuzzle,
+    checkMove,
+    fen,
+    getResponse,
+    loadByDifficulty,
+  } = usePuzzle();
 
   useEffect(() => {
     console.log("Loading puzzle with FEN:", fen);
@@ -196,6 +204,11 @@ const Game = (props: Props) => {
     setOptionSquares({});
   }
 
+  const changeDifficulty = (newDifficulty: number) => {
+    setDifficulty(newDifficulty);
+    loadByDifficulty(newDifficulty);
+  };
+
   // set the chessboard options
 
   const chessboardOptions = {
@@ -215,6 +228,7 @@ const Game = (props: Props) => {
         nextPuzzle={nextPuzzle}
         solved={solved}
         loading={loading}
+        changeDifficulty={changeDifficulty}
       />
     </div>
   );

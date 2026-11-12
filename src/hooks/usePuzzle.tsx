@@ -35,6 +35,8 @@ const usePuzzle = () => {
       setNextPuzzle(first.id);
       setPuzzles(puzzles);
       setPuzzleVersion((prev) => prev + 1);
+    } catch (error) {
+      console.error("Error loading puzzle:", error);
     } finally {
       setLoading(false);
     }
@@ -51,6 +53,21 @@ const usePuzzle = () => {
     setIndex(nextIndex);
     const puzzle = puzzles[nextIndex].puzzle;
     setNextPuzzle(puzzle.id);
+  };
+
+  const loadByDifficulty = async (difficulty: number) => {
+    setLoading(true);
+    try {
+      const puzzles = await fetchPuzzles(difficulty);
+      const first = puzzles[index].puzzle;
+      setNextPuzzle(first.id);
+      setPuzzles(puzzles);
+      setPuzzleVersion((prev) => prev + 1);
+    } catch (error) {
+      console.error("Error loading puzzle by difficulty:", error);
+    } finally {
+      setLoading(false);
+    }
   };
 
   const checkMove = (move: string) => {
@@ -78,6 +95,7 @@ const usePuzzle = () => {
     loading,
     nextPuzzle,
     getResponse,
+    loadByDifficulty,
   };
 };
 
