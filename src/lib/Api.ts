@@ -4,9 +4,7 @@ import { getDifficultyString } from "./Utils";
 export const fetchPuzzles = async (
   difficulty?: number,
 ): Promise<PuzzleItem[]> => {
-  //   const response = await fetch("https://lichess.org/api/puzzle/next", {
   const difficultyParam = getDifficultyString(difficulty);
-  console.log(difficultyParam);
   const response = await fetch(
     `https://lichess.org/api/puzzle/batch/mix?nb=15&difficulty=${difficultyParam}`,
     {

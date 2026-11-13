@@ -16,9 +16,9 @@ const NavBar = () => {
 
       <Link
         className=" hover:underline text-white px-4 py-2 rounded"
-        to="/leaderboard"
+        to="/instructions"
       >
-        Leaderboard
+        Instructions
       </Link>
     </div>
   );

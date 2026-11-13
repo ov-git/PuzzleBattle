@@ -1,4 +1,3 @@
-import { useState } from "react";
 import DifficultySelector from "./DifficultySelector";
 
 type Props = {
@@ -7,6 +6,7 @@ type Props = {
   nextPuzzle: () => void;
   orientation: "white" | "black";
   changeDifficulty: (difficulty: number) => void;
+  showHint: () => void;
 };
 
 const InfoPanel = ({
@@ -15,6 +15,7 @@ const InfoPanel = ({
   loading,
   orientation,
   changeDifficulty,
+  showHint,
 }: Props) => {
   return (
     <div className="flex flex-col items-center gap-4 p-4 lg:p-12 rounded-lg">
@@ -23,13 +24,22 @@ const InfoPanel = ({
         {orientation.toUpperCase()} to move{" "}
       </h3>
       <DifficultySelector changeDifficulty={changeDifficulty} />
-      <button
-        className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded mt-auto"
-        onClick={nextPuzzle}
-        disabled={loading}
-      >
-        {loading ? "Loading..." : "SKIP"}
-      </button>
+      <div className="flex gap-2">
+        <button
+          className="hover:bg-green-700 text-white px-4 py-1 rounded bg-green-800 font-bold mt-auto"
+          onClick={showHint}
+          disabled={loading}
+        >
+          {loading ? "Loading..." : "HINT"}
+        </button>
+        <button
+          className="hover:bg-green-700 text-white px-4 py-1 rounded bg-green-800 font-bold mt-auto"
+          onClick={nextPuzzle}
+          disabled={loading}
+        >
+          {loading ? "Loading..." : "SKIP"}
+        </button>
+      </div>
     </div>
   );
 };

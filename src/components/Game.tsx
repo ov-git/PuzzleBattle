@@ -7,9 +7,7 @@ import { parseMove } from "../lib/Utils";
 import type { PieceDropHandlerArgs, SquareHandlerArgs } from "react-chessboard";
 import InfoPanel from "./InfoPanel";
 
-type Props = {};
-
-const Game = (props: Props) => {
+const Game = () => {
   const chessGameRef = useRef(new Chess());
   const chessGame = chessGameRef.current;
 
@@ -21,21 +19,19 @@ const Game = (props: Props) => {
   const [optionSquares, setOptionSquares] = useState({});
 
   const [solved, setSolved] = useState(0);
-  // const [incorrect, setIncorrect] = useState(0);
   const [toast, setToast] = useState(0);
 
   const {
     loading,
     nextPuzzle,
-    loadPuzzle,
+    loadPuzzles,
     checkMove,
     fen,
     getResponse,
-    loadByDifficulty,
+    getHint,
   } = usePuzzle();
 
   useEffect(() => {
-    console.log("Loading puzzle with FEN:", fen);
     chessGame.load(fen);
     setOrientation(chessGame.turn() === "w" ? "white" : "black");
     setChessPosition(chessGame.fen());
@@ -49,9 +45,65 @@ const Game = (props: Props) => {
     if (!targetSquare) {
       return false;
     }
-    const success = trySolution(sourceSquare, targetSquare);
-    return success;
+    if (sourceSquare !== targetSquare) {
+      const possibleMove = isPossibleMove(sourceSquare, targetSquare);
+      if (!possibleMove) {
+        return false;
+      }
+      const success = trySolution(sourceSquare, targetSquare);
+      setOptionSquares({});
+      return success;
+    }
+    return false;
   };
+
+  const onPieceDrag = ({ square, piece }: SquareHandlerArgs) => {
+    if (piece) {
+      const hasMoveOptions = getMoveOptions(square as Square);
+      if (hasMoveOptions) {
+        setMoveFrom(square);
+      }
+      return;
+    }
+    setOptionSquares({});
+    // Handle piece drag event
+  };
+
+  function onSquareClick({ square, piece }: SquareHandlerArgs) {
+    // piece clicked to move
+    if (!moveFrom && piece) {
+      // get the move options for the square
+      const hasMoveOptions = getMoveOptions(square as Square);
+      if (hasMoveOptions) {
+        setMoveFrom(square);
+      }
+      return;
+    }
+
+    if (moveFrom === square) {
+      // if the same square is clicked again, clear moveFrom and optionSquares
+      setMoveFrom("");
+      setOptionSquares({});
+      return;
+    }
+
+    // square clicked to move to, check if valid move
+    const possibleMove = isPossibleMove(moveFrom, square);
+
+    // not a valid move
+    if (!possibleMove) {
+      // check if clicked on new piece
+      const hasMoveOptions = getMoveOptions(square as Square);
+      // if new piece, setMoveFrom, otherwise clear moveFrom
+      setMoveFrom(hasMoveOptions ? square : "");
+      return;
+    }
+    trySolution(moveFrom, square);
+    setChessPosition(chessGame.fen());
+    // clear moveFrom and optionSquares
+    setMoveFrom("");
+    setOptionSquares({});
+  }
 
   const makeMove = (move: string) => {
     chessGame.move(move);
@@ -95,49 +147,8 @@ const Game = (props: Props) => {
     return true; // return true to indicate that there are move options
   }
 
-  function onSquareClick({ square, piece }: SquareHandlerArgs) {
-    // piece clicked to move
-    if (!moveFrom && piece) {
-      // get the move options for the square
-      const hasMoveOptions = getMoveOptions(square as Square);
-      if (hasMoveOptions) {
-        setMoveFrom(square);
-      }
-      return;
-    }
-
-    if (moveFrom === square) {
-      // if the same square is clicked again, clear moveFrom and optionSquares
-      setMoveFrom("");
-      setOptionSquares({});
-      return;
-    }
-
-    // square clicked to move to, check if valid move
-    const moves = chessGame.moves({
-      square: moveFrom as Square,
-      verbose: true,
-    });
-    const foundMove = moves.find((m) => m.from === moveFrom && m.to === square);
-
-    // not a valid move
-    if (!foundMove) {
-      // check if clicked on new piece
-      const hasMoveOptions = getMoveOptions(square as Square);
-
-      // if new piece, setMoveFrom, otherwise clear moveFrom
-      setMoveFrom(hasMoveOptions ? square : "");
-      return;
-    }
-    trySolution(moveFrom, square);
-    setChessPosition(chessGame.fen());
-    // clear moveFrom and optionSquares
-    setMoveFrom("");
-    setOptionSquares({});
-  }
-
   const changeDifficulty = (newDifficulty: number) => {
-    loadByDifficulty(newDifficulty);
+    loadPuzzles(newDifficulty);
   };
 
   const trySolution = (from: string, to: string) => {
@@ -182,18 +193,28 @@ const Game = (props: Props) => {
     }
   };
 
-  const showToast = (type: number) => {
-    setToast(type);
+  const showHint = () => {
+    const hint = getHint();
+    const hintSquare = {
+      background: "green",
+    };
+    setOptionSquares({ [hint]: hintSquare });
+  };
 
-    setTimeout(() => {
-      setToast(0);
-    }, 1000);
+  const isPossibleMove = (from: string, to: string) => {
+    const moves = chessGame.moves({
+      square: from as Square,
+      verbose: true,
+    });
+    const foundMove = moves.find((m) => m.from === from && m.to === to);
+    return !!foundMove; //true if move is possible
   };
 
   // set the chessboard options
   const chessboardOptions = {
     position: chessPosition,
     onPieceDrop,
+    onPieceDrag,
     onSquareClick,
     boardOrientation: orientation,
     squareStyles: optionSquares,
@@ -204,6 +225,7 @@ const Game = (props: Props) => {
     <div className="flex flex-col lg:flex-row">
       <Board chessboardOptions={chessboardOptions} toast={toast} />
       <InfoPanel
+        showHint={showHint}
         orientation={orientation}
         nextPuzzle={nextPuzzle}
         solved={solved}

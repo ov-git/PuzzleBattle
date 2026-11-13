@@ -7,6 +7,10 @@ export const parseMove = (move: Move): string => {
   return `${move.from}${move.to}`;
 };
 
+export const getMoveFrom = (move: string): string => {
+  return move.substring(0, 2);
+};
+
 export const getDifficultyString = (difficulty?: number): string => {
   switch (difficulty) {
     case 1:

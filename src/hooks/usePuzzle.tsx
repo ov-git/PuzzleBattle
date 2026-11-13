@@ -1,5 +1,5 @@
-import { useCallback, useEffect, useState } from "react";
-import { DEFAULT_FEN } from "../lib/Utils";
+import { useEffect, useState } from "react";
+import { DEFAULT_FEN, getMoveFrom } from "../lib/Utils";
 import type { Puzzle, PuzzleItem } from "../lib/Types";
 import { fetchPuzzlebyId, fetchPuzzles } from "../lib/Api";
 
@@ -11,11 +11,10 @@ const usePuzzle = () => {
   const [solution, setSolution] = useState<string[]>([]);
   const [currentMove, setCurrentMove] = useState(0);
   const [loading, setLoading] = useState(false);
-  const [puzzleVersion, setPuzzleVersion] = useState(0);
 
   useEffect(() => {
     if (puzzles.length === 0 && loading === false) {
-      loadPuzzle();
+      loadPuzzles();
     }
   }, []);
 
@@ -25,26 +24,11 @@ const usePuzzle = () => {
       setSolution(currentPuzzle.solution);
       setCurrentMove(0);
     }
+    console.log("Current puzzle updated:", currentPuzzle);
   }, [currentPuzzle]);
-
-  const loadPuzzle = useCallback(async () => {
-    setLoading(true);
-    try {
-      const puzzles = await fetchPuzzles();
-      const first = puzzles[index].puzzle;
-      setNextPuzzle(first.id);
-      setPuzzles(puzzles);
-      setPuzzleVersion((prev) => prev + 1);
-    } catch (error) {
-      console.error("Error loading puzzle:", error);
-    } finally {
-      setLoading(false);
-    }
-  }, []);
 
   const setNextPuzzle = async (id: string) => {
     const puzzle = await fetchPuzzlebyId(id);
-    console.log("Fetched Puzzle by ID:", puzzle);
     setCurrentPuzzle(puzzle);
   };
 
@@ -55,14 +39,13 @@ const usePuzzle = () => {
     setNextPuzzle(puzzle.id);
   };
 
-  const loadByDifficulty = async (difficulty: number) => {
+  const loadPuzzles = async (difficulty?: number) => {
     setLoading(true);
     try {
       const puzzles = await fetchPuzzles(difficulty);
       const first = puzzles[index].puzzle;
       setNextPuzzle(first.id);
       setPuzzles(puzzles);
-      setPuzzleVersion((prev) => prev + 1);
     } catch (error) {
       console.error("Error loading puzzle by difficulty:", error);
     } finally {
@@ -74,7 +57,6 @@ const usePuzzle = () => {
     if (move !== solution[currentMove]) {
       return { correct: false, solved: false };
     }
-
     const nextMove = currentMove + 2;
     setCurrentMove(nextMove);
 
@@ -84,6 +66,10 @@ const usePuzzle = () => {
     };
   };
 
+  const getHint = () => {
+    return getMoveFrom(solution[currentMove]);
+  };
+
   const getResponse = () => {
     return solution[currentMove + 1];
   };
@@ -91,11 +77,11 @@ const usePuzzle = () => {
   return {
     fen,
     checkMove,
-    loadPuzzle,
+    getHint,
     loading,
     nextPuzzle,
     getResponse,
-    loadByDifficulty,
+    loadPuzzles,
   };
 };
 

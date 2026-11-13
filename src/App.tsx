@@ -2,7 +2,7 @@ import { Route, Routes } from "react-router";
 import MainPage from "./views/MainPage";
 import Layout from "./Layout";
 import LandingPage from "./views/LandingPage";
-import LeaderboardPage from "./views/LeaderboardPage";
+import InstructionsPage from "./views/InstructionsPage";
 
 function App() {
   return (
@@ -10,7 +10,7 @@ function App() {
       <Route path="/" element={<Layout />}>
         <Route index element={<LandingPage />} />
         <Route path="play" element={<MainPage />} />
-        <Route path="leaderboard" element={<LeaderboardPage />} />
+        <Route path="instructions" element={<InstructionsPage />} />
       </Route>
     </Routes>
   );
