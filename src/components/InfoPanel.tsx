@@ -18,7 +18,7 @@ const InfoPanel = ({
   showHint,
 }: Props) => {
   return (
-    <div className="flex flex-col items-center gap-4 p-4 lg:p-12 rounded-lg">
+    <div className="flex lg:flex-col items-center gap-4 p-4 lg:p-12 rounded-lg w-full max-w-120 lg:w-72 bg-slate-800">
       <h1 className="text-xl font-bold text-white m-3">Solved: {solved}</h1>
       <h3 className="text-xl font-bold text-white m-3">
         {orientation.toUpperCase()} to move{" "}

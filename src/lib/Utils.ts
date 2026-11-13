@@ -1,10 +1,12 @@
+import { chessColumnToColumnIndex } from "react-chessboard";
 import type { Move } from "./Types";
 
 export const DEFAULT_FEN =
   "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1";
 
 export const parseMove = (move: Move): string => {
-  return `${move.from}${move.to}`;
+  const promotion = move.promotion ? move.promotion : "";
+  return `${move.from}${move.to}${promotion}`;
 };
 
 export const getMoveFrom = (move: string): string => {

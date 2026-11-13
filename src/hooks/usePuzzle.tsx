@@ -24,7 +24,6 @@ const usePuzzle = () => {
       setSolution(currentPuzzle.solution);
       setCurrentMove(0);
     }
-    console.log("Current puzzle updated:", currentPuzzle);
   }, [currentPuzzle]);
 
   const setNextPuzzle = async (id: string) => {
