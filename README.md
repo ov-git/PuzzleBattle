@@ -3,11 +3,13 @@
 PuzzleBattle is a chess puzzle training application built with React, TypeScript and chess.js. It uses the Lichess API to retrieve chess puzzles.
 
 Live application: https://ov-git.github.io/PuzzleBattle/#/
-Getting Started
+
+
+## Installation
+
 Prerequisites
 - Node.js (LTS recommended)
 - npm
-## Installation
 
 1. Clone the repository:
    git clone https://github.com/ov-git/PuzzleBattle.git
