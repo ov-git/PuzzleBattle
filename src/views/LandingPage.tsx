@@ -1,8 +1,6 @@
 import { Link } from "react-router/internal/react-server-client";
 
-type Props = {};
-
-const LandingPage = (props: Props) => {
+const LandingPage = () => {
   return (
     <div className="w-full h-[55vh] sm:h-[85vh] flex flex-col justify-center items-center gap-6 bg-slate-900 text-white">
       <h1 className="text-4xl font-bold">Puzzle Battle</h1>

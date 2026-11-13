@@ -1,7 +1,5 @@
 import { useEffect, useState } from "react";
 
-type Props = {};
-
 type ToastProps = {
   toast: number;
 };

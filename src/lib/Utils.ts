@@ -1,4 +1,3 @@
-import { chessColumnToColumnIndex } from "react-chessboard";
 import type { Move } from "./Types";
 
 export const DEFAULT_FEN =
