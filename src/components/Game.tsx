@@ -21,7 +21,9 @@ const Game = (props: Props) => {
   const [optionSquares, setOptionSquares] = useState({});
 
   const [solved, setSolved] = useState(0);
-  const [difficulty, setDifficulty] = useState(0);
+  // const [incorrect, setIncorrect] = useState(0);
+  const [toast, setToast] = useState(0);
+
   const {
     loading,
     nextPuzzle,
@@ -39,38 +41,16 @@ const Game = (props: Props) => {
     setChessPosition(chessGame.fen());
   }, [fen]);
 
-  // handle piece drop
+  // drag and drop handler
   const onPieceDrop = ({
     sourceSquare,
     targetSquare,
   }: PieceDropHandlerArgs) => {
-    // type narrow targetSquare potentially being null (e.g. if dropped off board)
     if (!targetSquare) {
       return false;
     }
-
-    const move = {
-      from: sourceSquare,
-      to: targetSquare,
-      promotion: "q",
-    };
-    try {
-      const parsedMove = parseMove(move);
-      const { correct, solved } = checkMove(parsedMove);
-
-      if (solved) {
-        setSolved((prev) => prev + 1);
-        nextPuzzle();
-      } else if (correct) {
-        const response = getResponse();
-        makeMove(parsedMove);
-        setTimeout(() => makeMove(response), 500);
-      }
-
-      return true;
-    } catch {
-      return false;
-    }
+    const success = trySolution(sourceSquare, targetSquare);
+    return success;
   };
 
   const makeMove = (move: string) => {
@@ -102,8 +82,7 @@ const Game = (props: Props) => {
           chessGame.get(move.to) &&
           chessGame.get(move.to)?.color !== chessGame.get(square)?.color
             ? "radial-gradient(circle, rgba(0,0,0,.1) 85%, transparent 85%)" // larger circle for capturing
-            : "radial-gradient(circle, rgba(0,0,0,.1) 25%, transparent 25%)",
-        // smaller circle for moving
+            : "radial-gradient(circle, rgba(0,0,0,.1) 25%, transparent 25%)", // smaller circle for moving
         borderRadius: "50%",
       };
     }
@@ -112,11 +91,8 @@ const Game = (props: Props) => {
       background: "rgba(255, 255, 0, 0.4)",
     };
 
-    // set the option squares
     setOptionSquares(newSquares);
-
-    // return true to indicate that there are move options
-    return true;
+    return true; // return true to indicate that there are move options
   }
 
   function onSquareClick({ square, piece }: SquareHandlerArgs) {
@@ -124,12 +100,9 @@ const Game = (props: Props) => {
     if (!moveFrom && piece) {
       // get the move options for the square
       const hasMoveOptions = getMoveOptions(square as Square);
-
-      // if move options, set the moveFrom to the square
       if (hasMoveOptions) {
         setMoveFrom(square);
       }
-      // return early
       return;
     }
 
@@ -154,16 +127,25 @@ const Game = (props: Props) => {
 
       // if new piece, setMoveFrom, otherwise clear moveFrom
       setMoveFrom(hasMoveOptions ? square : "");
-
-      // return early
       return;
     }
+    trySolution(moveFrom, square);
+    setChessPosition(chessGame.fen());
+    // clear moveFrom and optionSquares
+    setMoveFrom("");
+    setOptionSquares({});
+  }
 
-    // is normal move
+  const changeDifficulty = (newDifficulty: number) => {
+    loadByDifficulty(newDifficulty);
+  };
+
+  const trySolution = (from: string, to: string) => {
+    // check if the move is correct for the current puzzle
     try {
       const move = {
-        from: moveFrom,
-        to: square,
+        from,
+        to,
         promotion: "q",
       };
 
@@ -171,46 +153,44 @@ const Game = (props: Props) => {
       const { correct, solved } = checkMove(parsedMove);
       if (solved) {
         makeMove(parsedMove);
+        setToast(1);
         setTimeout(() => {
           setSolved((prev) => prev + 1);
           nextPuzzle();
+          setToast(0);
         }, 1000);
       } else if (correct) {
         const response = getResponse();
         makeMove(parsedMove);
         setTimeout(() => makeMove(response), 500);
+      } else {
+        setToast(2);
+        setTimeout(() => {
+          setToast(0);
+        }, 1000);
       }
+      return true;
     } catch {
       // if invalid, setMoveFrom and getMoveOptions
-      const hasMoveOptions = getMoveOptions(square as Square);
+      const hasMoveOptions = getMoveOptions(to as Square);
 
       // if new piece, setMoveFrom, otherwise clear moveFrom
       if (hasMoveOptions) {
-        setMoveFrom(square);
+        setMoveFrom(to);
       }
-
-      // return early
-      return;
+      return false;
     }
+  };
 
-    // update the position state
-    setChessPosition(chessGame.fen());
+  const showToast = (type: number) => {
+    setToast(type);
 
-    // make random cpu move after a short delay
-    // setTimeout(makeRandomMove, 300);
-
-    // clear moveFrom and optionSquares
-    setMoveFrom("");
-    setOptionSquares({});
-  }
-
-  const changeDifficulty = (newDifficulty: number) => {
-    setDifficulty(newDifficulty);
-    loadByDifficulty(newDifficulty);
+    setTimeout(() => {
+      setToast(0);
+    }, 1000);
   };
 
   // set the chessboard options
-
   const chessboardOptions = {
     position: chessPosition,
     onPieceDrop,
@@ -222,7 +202,7 @@ const Game = (props: Props) => {
 
   return (
     <div className="flex flex-col lg:flex-row">
-      <Board chessboardOptions={chessboardOptions} />
+      <Board chessboardOptions={chessboardOptions} toast={toast} />
       <InfoPanel
         orientation={orientation}
         nextPuzzle={nextPuzzle}

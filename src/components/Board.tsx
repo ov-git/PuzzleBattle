@@ -1,6 +1,8 @@
 import { Chessboard, type PieceDropHandlerArgs } from "react-chessboard";
+import Toast from "./Toast";
 
 type Props = {
+  toast: number;
   chessboardOptions: {
     position: string;
     onPieceDrop: ({
@@ -10,10 +12,11 @@ type Props = {
   };
 };
 
-export default function Board({ chessboardOptions }: Props) {
+export default function Board({ chessboardOptions, toast }: Props) {
   return (
-    <div className="w-120 h-120 flex justify-center items-center bg-black">
+    <div className="w-120 h-120 flex flex-col justify-center items-center bg-black relative">
       <Chessboard options={chessboardOptions} />
+      <Toast toast={toast} />
     </div>
   );
 }

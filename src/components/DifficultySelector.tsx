@@ -6,16 +6,16 @@ type Props = {
 
 const DifficultySelector = ({ changeDifficulty }: Props) => {
   const [selected, setSelected] = useState(0);
+
   const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     event.preventDefault();
     setSelected(parseInt(event.target.value));
-    console.log("Selected difficulty:", event.target.value);
     changeDifficulty(parseInt(event.target.value));
   };
   return (
     <div className="flex flex-col gap-2 text-white text-sm">
       <label className="font-bold">Difficulty:</label>
-      <label>
+      <label className="flex items-center gap-1">
         <input
           type="radio"
           name="difficulty"
@@ -26,7 +26,7 @@ const DifficultySelector = ({ changeDifficulty }: Props) => {
         Easy
       </label>
 
-      <label>
+      <label className="flex items-center gap-1">
         <input
           type="radio"
           name="difficulty"
@@ -37,7 +37,7 @@ const DifficultySelector = ({ changeDifficulty }: Props) => {
         Medium
       </label>
 
-      <label>
+      <label className="flex items-center gap-1">
         <input
           type="radio"
           name="difficulty"
@@ -47,7 +47,7 @@ const DifficultySelector = ({ changeDifficulty }: Props) => {
         />
         Hard
       </label>
-      <label>
+      <label className="flex items-center gap-1">
         <input
           type="radio"
           name="difficulty"
@@ -57,7 +57,7 @@ const DifficultySelector = ({ changeDifficulty }: Props) => {
         />
         Very Hard
       </label>
-      <label>
+      <label className="flex items-center gap-1">
         <input
           type="radio"
           name="difficulty"
